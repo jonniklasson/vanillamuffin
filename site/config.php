@@ -4,6 +4,20 @@
 *
 */
 
+/**
+* Define the controllers, their classname and enable/disable them.
+*
+* The array-key is matched against the url, for example: 
+* the url 'developer/dump' would instantiate the controller with the key "developer", that is 
+* CCDeveloper and call the method "dump" in that class. This process is managed in:
+* $mu->FrontControllerRoute();
+* which is called in the frontcontroller phase from index.php.
+*/
+
+$mu->config['controllers'] = array(
+  'index'     => array('enabled' => true,'class' => 'CCIndex'),
+);
+
 /*
 * Set level of error reporting
 */
