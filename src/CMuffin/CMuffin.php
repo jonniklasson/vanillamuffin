@@ -84,7 +84,7 @@ class CMUFFIN implements ISingleton {
       include $functionsPath;
     }
 
-    // Extract $ly->data to own variables and handover to the template file
+    // Extract $mu->data to own variables and handover to the template file
     extract($this->data);     
     include("{$themePath}/default.tpl.php");
   }

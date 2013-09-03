@@ -13,7 +13,7 @@ class CRequest {
     // Take current url and divide it in controller, method and arguments
     $query = substr($_SERVER['REQUEST_URI'], strlen(rtrim(dirname($_SERVER['SCRIPT_NAME']), '/')));
     $splits = explode('/', trim($query, '/'));
-	print_r($query);
+
     // Set controller, method and arguments
 
 	
