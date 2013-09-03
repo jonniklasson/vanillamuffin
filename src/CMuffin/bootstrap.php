@@ -8,6 +8,7 @@
 /**
 * Enable auto-load of class declarations.
 */
+
 function autoload($aClassName) {
   $classFile = "/src/{$aClassName}/{$aClassName}.php";
    $file1 = MUFFIN_INSTALL_PATH . $classFile;
@@ -18,5 +19,4 @@ function autoload($aClassName) {
       require_once($file2);
    }
 }
-
 spl_autoload_register('autoload');

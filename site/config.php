@@ -14,9 +14,6 @@
 * which is called in the frontcontroller phase from index.php.
 */
 
-$mu->config['controllers'] = array(
-  'index'     => array('enabled' => true,'class' => 'CCIndex'),
-);
 
 /*
 * Set level of error reporting
@@ -43,3 +40,15 @@ $mu->config['character_encoding'] = 'UTF-8';
 * Define language
 */
 $mu->config['language'] = 'en';
+
+/**
+* Settings for the theme.
+*/
+$mu->config['controllers'] = array(
+  'index'     => array('enabled' => true,'class' => 'CCIndex'),
+);
+// The name of the theme in the theme directory
+$mu->config['theme'] = array(  
+  'name'    => 'core',
+);
+

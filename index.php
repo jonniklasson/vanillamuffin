@@ -1,7 +1,5 @@
 <?php
-//
 // PHASE: BOOTSTRAP
-//
 define('MUFFIN_INSTALL_PATH', dirname(__FILE__));
 define('MUFFIN_SITE_PATH', MUFFIN_INSTALL_PATH . '/site');
 
