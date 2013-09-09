@@ -56,3 +56,12 @@ $mu->config['theme'] = array(
   'name'    => 'core',
 );
 
+/**
+* What type of urls should be used?
+* 
+* default      = 0      => index.php/controller/method/arg1/arg2/arg3
+* clean        = 1      => controller/method/arg1/arg2/arg3
+* querystring  = 2      => index.php?q=controller/method/arg1/arg2/arg3
+*/
+$mu->config['url_type'] = 1;
+
