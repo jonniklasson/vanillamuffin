@@ -14,6 +14,10 @@
 * which is called in the frontcontroller phase from index.php.
 */
 
+/**
+* Set a base_url to use another than the default calculated
+*/
+$mu->config['base_url'] = null;
 
 /*
 * Set level of error reporting

@@ -71,13 +71,14 @@ class CMUFFIN implements ISingleton {
     // Get the paths and settings for the theme
     $themeName    = $this->config['theme']['name'];
     $themePath    = MUFFIN_INSTALL_PATH . "/themes/{$themeName}";
-    $themeUrl      = "themes/{$themeName}";
+    $themeUrl	 = $this->request->base_url . "themes/{$themeName}";
    
     // Add stylesheet path to the $mu->data array
 	
     $this->data['stylesheet'] = "{$themeUrl}/style.css";
 
     // Include the global functions.php and the functions.php that are part of the theme
+	include('themes/functions.php');
     $mu = &$this;
     $functionsPath = "{$themePath}/functions.php";
     if(is_file($functionsPath)) {
