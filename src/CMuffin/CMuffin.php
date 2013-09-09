@@ -17,44 +17,58 @@ class CMUFFIN implements ISingleton {
       $mu = &$this;
       require(MUFFIN_SITE_PATH.'/config.php');
    }
+	/**
+    * Singleton pattern. Get the instance of the latest created object or create a new one. 
+    * @return CMUFFIN The instance of this class.
+    */
+	public static function Instance() {
+      if(self::$instance == null) {
+         self::$instance = new CMUFFIN();
+      }
+      return self::$instance;
+   }
+	
 	
    /**
     * Frontcontroller, check url and route to controllers.
     */
   public function FrontControllerRoute() {
-    // Step 1
     // Take current url and divide it in controller, method and parameters
-    $this->request = new CRequest();
-    $this->request->Init();
+    $this->request = new CRequest($this->config['url_type']);
+    $this->request->Init($this->config['base_url']);
     $controller = $this->request->controller;
     $method     = $this->request->method;
     $arguments  = $this->request->arguments;
-	
-	$controllerExists    = isset($this->config['controllers'][$controller]);
+    
+    // Is the controller enabled in config.php?
+    $controllerExists   = isset($this->config['controllers'][$controller]);
     $controllerEnabled   = false;
-    $className           = false;
+    $className          = false;
     $classExists         = false;
 
     if($controllerExists) {
-      $controllerEnabled    = ($this->config['controllers'][$controller]['enabled'] == true);
-      $className               = $this->config['controllers'][$controller]['class'];
-      $classExists           = class_exists($className);
+      $controllerEnabled   = ($this->config['controllers'][$controller]['enabled'] == true);
+      $className          = $this->config['controllers'][$controller]['class'];
+      $classExists         = class_exists($className);
     }
 	
     // Step 2
     // Check if there is a callable method in the controller class, if then call it
 
+    // Check if controller has a callable method in the controller class, if then call it
     if($controllerExists && $controllerEnabled && $classExists) {
       $rc = new ReflectionClass($className);
       if($rc->implementsInterface('IController')) {
         if($rc->hasMethod($method)) {
           $controllerObj = $rc->newInstance();
           $methodObj = $rc->getMethod($method);
-          $methodObj->invokeArgs($controllerObj, $arguments);
+          if($methodObj->isPublic()) {
+            $methodObj->invokeArgs($controllerObj, $arguments);
+          } else {
+            die("404. " . get_class() . ' error: Controller method not public.');          
+          }
         } else {
-
           die("404. " . get_class() . ' error: Controller does not contain method.');
-		  
         }
       } else {
         die('404. ' . get_class() . ' error: Controller does not implement interface IController.');
@@ -78,8 +92,8 @@ class CMUFFIN implements ISingleton {
     $this->data['stylesheet'] = "{$themeUrl}/style.css";
 
     // Include the global functions.php and the functions.php that are part of the theme
-	include('themes/functions.php');
     $mu = &$this;
+	include(MUFFIN_INSTALL_PATH . '/themes/functions.php');
     $functionsPath = "{$themePath}/functions.php";
     if(is_file($functionsPath)) {
       include $functionsPath;
@@ -90,15 +104,7 @@ class CMUFFIN implements ISingleton {
     include("{$themePath}/default.tpl.php");
   }
 
-   /**
-    * Singleton pattern. Get the instance of the latest created object or create a new one. 
-    * @return CMUFFIN The instance of this class.
-    */
-   public static function Instance() {
-      if(self::$instance == null) {
-         self::$instance = new CMUFFIN();
-      }
-      return self::$instance;
-   }
+
+
    
    }

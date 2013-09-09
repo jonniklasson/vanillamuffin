@@ -20,7 +20,7 @@ class CCDeveloper implements IController {
   public function Links() {  
     $this->Menu();
     
-    $mu = CLydia::Instance();
+    $mu = CMuffin::Instance();
     
     $url = 'developer/links';
     $current      = $mu->request->CreateUrl($url);
@@ -60,7 +60,7 @@ EOD;
     
     $html = null;
     foreach($menu as $val) {
-      $html .= "<li><a href='" . $ly->request->CreateUrl($val) . "'>$val</a>";  
+      $html .= "<li><a href='" . $mu->request->CreateUrl($val) . "'>$val</a>";  
     }
     
     $mu->data['title'] = "The Developer Controller";

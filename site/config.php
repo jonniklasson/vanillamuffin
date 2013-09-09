@@ -50,6 +50,7 @@ $mu->config['language'] = 'en';
 */
 $mu->config['controllers'] = array(
   'index'     => array('enabled' => true,'class' => 'CCIndex'),
+  'developer' => array('enabled' => true,'class' => 'CCDeveloper'),
 );
 // The name of the theme in the theme directory
 $mu->config['theme'] = array(  
