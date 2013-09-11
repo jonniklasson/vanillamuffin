@@ -9,12 +9,12 @@
  * Print debuginformation from the framework.
  */
 function get_debug() {
-  $mu = CMuffin::Instance();
-	$html = null;
-	if(isset($mu->config['debug']['display-muffin'])) {
-		$html = "<hr><h3>Debuginformation</h3><p>The content of CMuffin:</p><pre>" . htmlent(print_r($mu, true)) . "</pre>";
-	}   
-return $html;
+  $mu = CMuffin::Instance();  
+  $html = null;
+  if(isset($mu->config['debug']['display-muffin']) && $mu->config['debug']['display-muffin']) {
+    $html = "<hr><h3>Debuginformation</h3><p>The content of CMuffin:</p><pre>" . htmlent(print_r($mu, true)) . "</pre>";
+  }    
+  return $html;
 }
 
 
@@ -32,4 +32,3 @@ function base_url($url) {
 function current_url() {
   return CMuffin::Instance()->request->current_url;
 }
-
