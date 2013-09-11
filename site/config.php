@@ -74,3 +74,8 @@ $mu->config['theme'] = array(
   // The name of the theme in the theme directory
   'name'    => 'core', 
 );
+
+/**
+* Set database(s).
+*/
+$mu->config['database'][0]['dsn'] = 'sqlite:' . MUFFIN_SITE_PATH . '/data/.ht.sqlite';
