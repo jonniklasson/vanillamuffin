@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="sv">
+<html lang="sv"> 
 <head>
   <meta charset="utf-8">
   <title><?=$title?></title>
@@ -11,10 +11,10 @@
   </div>
   <div id="main" role="main">
     <?=$main?>
-    <?=get_debug()?>
   </div>
   <div id="footer">
     <?=$footer?>
+    <?=get_debug()?>
   </div>
 </body>
 </html>

@@ -10,10 +10,11 @@
  */
 function get_debug() {
   $mu = CMuffin::Instance();
-  $html = "<h2>Debuginformation</h2><hr><p>The content of the config array:</p><pre>" . htmlentities(print_r($mu->config, true)) . "</pre>";
-  $html .= "<hr><p>The content of the data array:</p><pre>" . htmlentities(print_r($mu->data, true)) . "</pre>";
-  $html .= "<hr><p>The content of the request array:</p><pre>" . htmlentities(print_r($mu->request, true)) . "</pre>";
-  return $html;
+	$html = null;
+	if(isset($mu->config['debug']['display-muffin'])) {
+		$html = "<hr><h3>Debuginformation</h3><p>The content of CMuffin:</p><pre>" . htmlent(print_r($mu, true)) . "</pre>";
+	}   
+return $html;
 }
 
 
@@ -21,7 +22,7 @@ function get_debug() {
  * Prepend the base_url.
  */
 function base_url($url) {
-  return $mu->request->base_url . trim($url, '/');
+  return CMuffin::Instance()->request->base_url . trim($url, '/');
 }
 
 
@@ -29,6 +30,6 @@ function base_url($url) {
  * Return the current url.
  */
 function current_url() {
-  return $mu->request->current_url;
+  return CMuffin::Instance()->request->current_url;
 }
 

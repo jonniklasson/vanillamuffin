@@ -42,9 +42,9 @@ class CMUFFIN implements ISingleton {
     
     // Is the controller enabled in config.php?
     $controllerExists   = isset($this->config['controllers'][$controller]);
-    $controllerEnabled   = false;
+    $controllerEnabled  = false;
     $className          = false;
-    $classExists         = false;
+    $classExists        = false;
 
     if($controllerExists) {
       $controllerEnabled   = ($this->config['controllers'][$controller]['enabled'] == true);
@@ -59,9 +59,10 @@ class CMUFFIN implements ISingleton {
     if($controllerExists && $controllerEnabled && $classExists) {
       $rc = new ReflectionClass($className);
       if($rc->implementsInterface('IController')) {
-        if($rc->hasMethod($method)) {
+		$formattedMethod = str_replace(array('_', '-'), '', $method);
+        if($rc->hasMethod($formattedMethod)) {
           $controllerObj = $rc->newInstance();
-          $methodObj = $rc->getMethod($method);
+          $methodObj = $rc->getMethod($formattedMethod);
           if($methodObj->isPublic()) {
             $methodObj->invokeArgs($controllerObj, $arguments);
           } else {
