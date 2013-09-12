@@ -15,9 +15,15 @@ ini_set('display_errors', 1);
 * Set what to show as debug or developer information in the get_debug() theme helper.
 */
 $mu->config['debug']['muffin'] = false;
+$mu->config['debug']['session'] = false;
+$mu->config['debug']['timer'] = true;
 $mu->config['debug']['db-num-queries'] = true;
 $mu->config['debug']['db-queries'] = true;
 
+/**
+* set session key name
+*/
+$mu->config['session_key']  = 'muffin';
 
 /**
  * What type of urls should be used?
@@ -81,4 +87,5 @@ $mu->config['theme'] = array(
 * Set database(s).
 */
 $mu->config['database'][0]['dsn'] = 'sqlite:' . MUFFIN_SITE_PATH . '/data/.ht.sqlite';
+
 

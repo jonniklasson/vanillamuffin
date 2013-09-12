@@ -30,8 +30,21 @@ class CRequest {
 	/**
 	 * Create a url in the way it should be created.
 	 *
+	 * @param $url string the relative url or the controller
+	 * @param $method string the method to use, $url is then the controller or empty for current
 	 */
-	public function CreateUrl($url=null) {
+	public function CreateUrl($url=null, $method=null) {
+    // If fully qualified just leave it.
+		if(!empty($url) && (strpos($url, '://') || $url[0] == '/')) {
+			return $url;
+		}
+    
+    // Get current controller if empty and method choosen
+    if(empty($url) && !empty($method)) {
+      $url = $this->controller;
+    }
+    
+    // Create url according to configured style
     $prepend = $this->base_url;
     if($this->cleanUrl) {
       ;
@@ -40,7 +53,7 @@ class CRequest {
     } else {
       $prepend .= 'index.php/';
     }
-    return $prepend . rtrim($url, '/');
+    return $prepend . rtrim("$url/$method", '/');
   }
 
 
@@ -57,13 +70,13 @@ class CRequest {
 	    $scriptPart = dirname($scriptName);
 		}
 
-    // Set query to be everything after base_url, except the optional querystring
-	$query = trim(substr($requestUri, strlen(rtrim($scriptPart, '/'))), '/');
-	$pos = strcspn($query, '?');
-	if($pos) {
-	  $query = substr($query, 0, $pos);    
-	}
-    	
+		// Set query to be everything after base_url, except the optional querystring
+		$query = trim(substr($requestUri, strlen(rtrim($scriptPart, '/'))), '/');
+		$pos = strcspn($query, '?');
+    if($pos) {
+      $query = substr($query, 0, $pos);    
+    }
+    
 		// Check if this looks like a querystring approach link
     if(substr($query, 0, 1) === '?' && isset($_GET['q'])) {
       $query = trim($_GET['q']);
@@ -79,7 +92,7 @@ class CRequest {
 		// Prepare to create current_url and base_url
 		$currentUrl = $this->GetCurrentUrl();
 		$parts 	    = parse_url($currentUrl);
-		$baseUrl 	= !empty($baseUrl) ? $baseUrl : "{$parts['scheme']}://{$parts['host']}" . (isset($parts['port']) ? ":{$parts['port']}" : '') . rtrim(dirname($scriptName), '/');
+		$baseUrl 		= !empty($baseUrl) ? $baseUrl : "{$parts['scheme']}://{$parts['host']}" . (isset($parts['port']) ? ":{$parts['port']}" : '') . rtrim(dirname($scriptName), '/');
 
 		// Store it
 		$this->base_url 	  = rtrim($baseUrl, '/') . '/';
@@ -106,5 +119,6 @@ class CRequest {
     $url .= $_SERVER["SERVER_NAME"] . $serverPort . htmlspecialchars($_SERVER["REQUEST_URI"]);
 		return $url;
 	}
+
 
 }

@@ -6,17 +6,24 @@
  */
 class CCGuestbook extends CObject implements IController,IHasSQL {
 
-  private $pageTitle = 'Muffin Guestbook Example';
-  private $pageHeader = '<h1>Guestbook Example</h1><p>Showing off how to implement a guestbook. Now saving to database.</p>';
-  private $pageMessages = '<h2>Current messages</h2>';
-  
-
   /**
    * Constructor
    */
   public function __construct() {
     parent::__construct();
   }
+  
+ /**
+   * Implementing interface IController. All controllers must have an index action.
+   */
+  public function Index() {
+    $this->views->SetTitle('Lydia Guestbook Example');
+    $this->views->AddInclude(__DIR__ . '/index.tpl.php', array(
+      'entries'=>$this->ReadAllFromDatabase(), 
+      'formAction'=>$this->request->CreateUrl('', 'handler')
+    ));
+  }  
+  
 /**
 * Implementing interface IHasSQL. Encapsulate all SQL used by this class.
 *
@@ -41,6 +48,7 @@ class CCGuestbook extends CObject implements IController,IHasSQL {
   private function CreateTableInDatabase() {
     try {
       $this->db->ExecuteQuery(self::SQL('create table guestbook'));
+	  $this->session->AddMessage('notice', 'Successfully created the database tables (or left them untouched if they already existed).');
     } catch(Exception$e) {
       die("$e<br/>Failed to open database: " . $this->config['database'][0]['dsn']);
     }
@@ -52,6 +60,7 @@ class CCGuestbook extends CObject implements IController,IHasSQL {
 */
   private function SaveNewToDatabase($entry) {
     $this->db->ExecuteQuery(self::SQL('insert into guestbook'), array($entry));
+	$this->session->AddMessage('success', 'Successfully inserted new message.');
     if($this->db->rowCount() != 1) {
       echo 'Failed to insert new guestbook item into database.';
     }
@@ -62,6 +71,7 @@ class CCGuestbook extends CObject implements IController,IHasSQL {
 */
   private function DeleteAllFromDatabase() {
     $this->db->ExecuteQuery(self::SQL('delete from guestbook'));
+	$this->session->AddMessage('info', 'Removed all messages from the database table.');
   }
   
   
@@ -77,32 +87,7 @@ class CCGuestbook extends CObject implements IController,IHasSQL {
     }
   }
  
-/**
-* Implementing interface IController. All controllers must have an index action.
-*/
-  public function Index() {	
-    $formAction = $this->request->CreateUrl('guestbook/handler');
-    $this->pageForm = "
-      <form action='{$formAction}' method='post'>
-        <p>
-          <label>Message: <br/>
-          <textarea name='newEntry'></textarea></label>
-        </p>
-        <p>
-          <input type='submit' name='doAdd' value='Add message' />
-          <input type='submit' name='doClear' value='Clear all messages' />
-          <input type='submit' name='doCreate' value='Create database table' />
-        </p>
-      </form>
-    ";
-    $this->data['title'] = $this->pageTitle;
-    $this->data['main']  = $this->pageHeader . $this->pageForm . $this->pageMessages;
-    
-    $entries = $this->ReadAllFromDatabase();
-    foreach($entries as $val) {
-      $this->data['main'] .= "<div style='background-color:#f6f6f6;border:1px solid #ccc;margin-bottom:1em;padding:1em;'><p>At: {$val['created']}</p><p>" . htmlent($val['entry']) . "</p></div>\n";
-    }
-  }
+
   
 
 /**
@@ -118,7 +103,7 @@ class CCGuestbook extends CObject implements IController,IHasSQL {
     elseif(isset($_POST['doCreate'])) {
       $this->CreateTableInDatabase();
     }            
-    header('Location: ' . $this->request->CreateUrl('guestbook'));
+     $this->RedirectTo($this->request->CreateUrl($this->request->controller));
   }
   
 }

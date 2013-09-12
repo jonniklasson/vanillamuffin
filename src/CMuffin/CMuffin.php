@@ -7,12 +7,26 @@
 
 class CMUFFIN implements ISingleton {
 
-   private static $instance = null;
+	/**
+	 * Members
+	 */
+	private static $instance = null;
+	public $config = array();
+	public $request;
+	public $data;
+	public $db;
+	public $views;
+	public $session;
+	public $timer = array();
    
 	/**
 	* Constructor
 	*/
    protected function __construct() {
+	
+	// time page generation
+    $this->timer['first'] = microtime(true); 
+	
 	// include the site specific config.php and create a ref to $mu to be used by config.php
 	$mu = &$this;
 	require(MUFFIN_SITE_PATH.'/config.php');
@@ -20,6 +34,8 @@ class CMUFFIN implements ISingleton {
 	// Start a named session
 	session_name($this->config['session_name']);
 	session_start();
+	$this->session = new CSession($this->config['session_key']);
+    $this->session->PopulateFromSession();
 
 	// Set default date/time-zone
 	date_default_timezone_set($this->config['timezone']);
@@ -28,6 +44,8 @@ class CMUFFIN implements ISingleton {
     if(isset($this->config['database'][0]['dsn'])) {
      $this->db = new CMDatabase($this->config['database'][0]['dsn']);
     }
+	
+	$this->views = new CViewContainer();
 
    }
 	/**
@@ -96,9 +114,13 @@ class CMUFFIN implements ISingleton {
     * ThemeEngineRender, renders the reply of the request.
     */
   public function ThemeEngineRender() {
+     // Save to session before output anything
+    $this->session->StoreInSession();
+  
     // Get the paths and settings for the theme
     $themeName    = $this->config['theme']['name'];
     $themePath    = MUFFIN_INSTALL_PATH . "/themes/{$themeName}";
+	
     $themeUrl	 = $this->request->base_url . "themes/{$themeName}";
    
     // Add stylesheet path to the $mu->data array
@@ -113,8 +135,9 @@ class CMUFFIN implements ISingleton {
       include $functionsPath;
     }
 
-    // Extract $mu->data to own variables and handover to the template file
-    extract($this->data);     
+    // Extract $mu->data and $mu->view->data to own variables and handover to the template file
+    extract($this->data);      
+    extract($this->views->GetData());      
     include("{$themePath}/default.tpl.php");
   }
 

@@ -12,7 +12,6 @@
     <input type='submit' name='doCreate' value='Create database table' />
   </p>
 </form>
-
 <h2>Current messages</h2>
 
 <?php foreach($entries as $val):?>
@@ -21,3 +20,4 @@
   <p><?=htmlent($val['entry'])?></p>
 </div>
 <?php endforeach;?>
+
