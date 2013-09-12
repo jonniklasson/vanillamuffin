@@ -6,17 +6,22 @@
  
 
 /**
- * Print debuginformation from the framework.
- */
+* Print debuginformation from the framework.
+*/
 function get_debug() {
   $mu = CMuffin::Instance();  
   $html = null;
-  if(isset($mu->config['debug']['display-muffin']) && $mu->config['debug']['display-muffin']) {
-    $html = "<hr><h3>Debuginformation</h3><p>The content of CMuffin:</p><pre>" . htmlent(print_r($mu, true)) . "</pre>";
+  if(isset($mu->config['debug']['db-num-queries']) && $mu->config['debug']['db-num-queries'] && isset($mu->db)) {
+    $html .= "<p>Database made " . $mu->db->GetNumQueries() . " queries.</p>";
+  }    
+  if(isset($mu->config['debug']['db-queries']) && $mu->config['debug']['db-queries'] && isset($mu->db)) {
+    $html .= "<p>Database made the following queries.</p><pre>" . implode('<br/><br/>', $mu->db->GetQueries()) . "</pre>";
+  }    
+  if(isset($mu->config['debug']['lydia']) && $mu->config['debug']['lydia']) {
+    $html .= "<hr><h3>Debuginformation</h3><p>The content of CLydia:</p><pre>" . htmlent(print_r($mu, true)) . "</pre>";
   }    
   return $html;
 }
-
 
 /**
  * Prepend the base_url.
