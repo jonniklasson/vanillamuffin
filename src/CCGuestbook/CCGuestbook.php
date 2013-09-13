@@ -21,7 +21,7 @@ class CCGuestbook extends CObject implements IController {
    * Implementing interface IController. All controllers must have an index action.
    */
   public function Index() {
-    $this->views->SetTitle('Lydia Guestbook Example');
+    $this->views->SetTitle('Muffin Guestbook Example');
     $this->views->AddInclude(__DIR__ . '/index.tpl.php', array(
       'entries'=>$this->guestbookModel->ReadAll(), 
       'formAction'=>$this->request->CreateUrl('', 'handler')
