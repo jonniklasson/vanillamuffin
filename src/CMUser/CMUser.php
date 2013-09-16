@@ -1,5 +1,4 @@
 <?php
-<?php
 /**
 * A model for an authenticated user.
 * 
@@ -99,14 +98,5 @@ class CMUser extends CObject implements IHasSQL {
     return $this->session->GetAuthenticatedUser();
   }
   
-  
-} elseif(isset($_POST['doClear'])) {
-      $this->guestbookModel->DeleteAll();
-    }            
-    elseif(isset($_POST['doCreate'])) {
-      $this->guestbookModel->init();
-    }            
-     $this->RedirectTo($this->request->CreateUrl($this->request->controller));
-  }
   
 }

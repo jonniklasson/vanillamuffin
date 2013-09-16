@@ -50,10 +50,14 @@ function base_url($url=null) {
 
 /**
  * Create a url to an internal resource.
- */
-function create_url($url=null) {
-  return CMuffin::Instance()->request->CreateUrl($url);
-}
+ *
+ * @param string the whole url or the controller. Leave empty for current controller.
+ * @param string the method when specifying controller as first argument, else leave empty.
+ * @param string the extra arguments to the method, leave empty if not using method.
+  */
+	function create_url($urlOrController=null, $method=null, $arguments=null) {
+		return CMuffin::Instance()->request->CreateUrl($urlOrController, $method, $arguments);
+	}
 
 /**
  * Prepend the theme_url, which is the url to the current theme directory.
