@@ -69,7 +69,22 @@ function theme_url($url) {
 
 
 
-
+/**
+ * Login menu. Creates a menu which reflects if user is logged in or not.
+ */
+function login_menu() {
+  $mu = CMuffin::Instance();
+  if($mu->user->IsAuthenticated()) {
+    $items = "<a href='" . create_url('user/profile') . "'>" . $mu->user->GetAcronym() . "</a> ";
+    if($mu->user->IsAdministrator()) {
+      $items .= "<a href='" . create_url('acp') . "'>acp</a> ";
+    }
+    $items .= "<a href='" . create_url('user/logout') . "'>logout</a> ";
+  } else {
+    $items = "<a href='" . create_url('user/login') . "'>login</a> ";
+  }
+  return "<nav>$items</nav>";
+}
 
 
 /**

@@ -16,6 +16,7 @@ class CMUFFIN implements ISingleton {
 	public $data;
 	public $db;
 	public $views;
+	public $user;
 	public $session;
 	public $timer = array();
    
@@ -46,6 +47,9 @@ class CMUFFIN implements ISingleton {
     }
 	
 	$this->views = new CViewContainer();
+	
+	 // Create a object for the user
+    $this->user = new CMUser($this);
 
    }
 	/**

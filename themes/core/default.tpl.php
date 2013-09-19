@@ -6,8 +6,15 @@
   <link rel="stylesheet" href="<?=$stylesheet?>">
 </head>
 <body>
-  <div id="header">
-    <?=$header?>
+ <div id='wrap-header'>
+    <div id='header'>
+      <div id='login-menu'>
+        <?=login_menu()?>
+      </div>
+      <div id='banner'>       
+        <p class='site-title'><?=$header?></p>
+      </div>
+    </div>
   </div>
   <div id="main" role="main">
     <?=get_messages_from_session()?>

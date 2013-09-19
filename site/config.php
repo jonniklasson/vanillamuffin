@@ -23,6 +23,7 @@ $mu->config['debug']['db-queries'] = true;
 /**
 * set session key name
 */
+$mu->config['session_name'] = preg_replace('/[:\.\/-_]/', '', __DIR__);
 $mu->config['session_key']  = 'muffin';
 
 /**
@@ -70,10 +71,11 @@ $mu->config['language'] = 'en';
  * which is called in the frontcontroller phase from index.php.
  */
 $mu->config['controllers'] = array(
-  'index'     => array('enabled' => true,'class' => 'CCIndex'),
-  'developer' => array('enabled' => true,'class' => 'CCDeveloper'),
-  'guestbook' => array('enabled' => true,'class' => 'CCGuestbook'),
-  'user' => array('enabled' => true,'class' => 'CCUser'),
+  'index'     	=> array('enabled' => true,'class' => 'CCIndex'),
+  'developer' 	=> array('enabled' => true,'class' => 'CCDeveloper'),
+  'guestbook' 	=> array('enabled' => true,'class' => 'CCGuestbook'),
+  'user' 		=> array('enabled' => true,'class' => 'CCUser'),
+  'acp'       	=> array('enabled' => true,'class' => 'CCAdminControlPanel'),
 );
 
 /**

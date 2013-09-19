@@ -6,24 +6,27 @@
 */
 class CObject {
 
-   public $config;
-   public $request;
-   public $data;
-   public $db;
-   public $views;
-   public $session;
-
+	protected $config;
+	protected $request;
+	protected $data;
+	protected $db;
+	protected $views;
+	protected $session;
+	protected $user;
    /**
-    * Constructor
+    * Constructor, can be instantiated by sending in the $mu reference.
     */
-   protected function __construct() {
-    $mu = CMuffin::Instance();
-    $this->config   = &$mu->config;
-    $this->request  = &$mu->request;
-    $this->data     = &$mu->data;
+  protected function __construct($mu=null) {
+	if(!$mu) {
+	  $mu = CMuffin::Instance();
+	} 	
+	$this->config   = &$mu->config;
+	$this->request  = &$mu->request;
+	$this->data     = &$mu->data;
 	$this->db       = &$mu->db;
 	$this->views	= &$mu->views;
-    $this->session  = &$mu->session;
+	$this->session  = &$mu->session;
+	$this->user 	= &$mu->user;
   }
   
   	/**
@@ -31,13 +34,13 @@ class CObject {
 	 */
 	protected function RedirectTo($urlOrController=null, $method=null) {
     $mu = CMuffin::Instance();
-    if(isset($mu->config['debug']['db-num-queries']) && $mu->config['debug']['db-num-queries'] && isset($mu->db)) {
+    if(isset($this->config['debug']['db-num-queries']) && $this->config['debug']['db-num-queries'] && isset($this->db)) {
       $this->session->SetFlash('database_numQueries', $this->db->GetNumQueries());
     }    
-    if(isset($mu->config['debug']['db-queries']) && $mu->config['debug']['db-queries'] && isset($mu->db)) {
+    if(isset($this->config['debug']['db-queries']) && $this->config['debug']['db-queries'] && isset($this->db)) {
       $this->session->SetFlash('database_queries', $this->db->GetQueries());
     }    
-    if(isset($mu->config['debug']['timer']) && $mu->config['debug']['timer']) {
+    if(isset($this->config['debug']['timer']) && $this->config['debug']['timer']) {
 	    $this->session->SetFlash('timer', $mu->timer);
     }    
     $this->session->StoreInSession();
@@ -65,7 +68,26 @@ class CObject {
     $method = is_null($method) ? $this->request->method : null;    
     $this->RedirectTo($this->request->CreateUrl($controller, $method));
    }
- 
-  
+	/**
+	 * Save a message in the session. Uses $this->session->AddMessage()
+	 *
+   * @param $type string the type of message, for example: notice, info, success, warning, error.
+   * @param $message string the message.
+   */
+  protected function AddMessage($type, $message) {
+    $this->session->AddMessage($type, $message);
+  }
+
+
+	/**
+	 * Create an url. Uses $this->request->CreateUrl()
+	 *
+	 * @param $urlOrController string the relative url or the controller
+	 * @param $method string the method to use, $url is then the controller or empty for current
+	 * @param $arguments string the extra arguments to send to the method
+	 */
+	protected function CreateUrl($urlOrController=null, $method=null, $arguments=null) {
+    $this->request->CreateUrl($urlOrController, $method, $arguments);
+  }
 
 }

@@ -10,8 +10,8 @@ class CMUser extends CObject implements IHasSQL {
   /**
    * Constructor
    */
-  public function __construct() {
-    parent::__construct();
+  public function __construct($mu=null) {
+    parent::__construct($mu);
   }
 
 
@@ -63,7 +63,7 @@ class CMUser extends CObject implements IHasSQL {
       $this->db->ExecuteQuery(self::SQL('insert into user2group'), array($idRootUser, $idAdminGroup));
       $this->db->ExecuteQuery(self::SQL('insert into user2group'), array($idRootUser, $idUserGroup));
       $this->db->ExecuteQuery(self::SQL('insert into user2group'), array($idDoeUser, $idUserGroup));
-      $this->session->AddMessage('notice', 'Successfully created the database tables and created a default admin user as root:root and an ordinary user as doe:doe.');
+      $this->AddMessage('notice', 'Successfully created the database tables and created a default admin user as root:root and an ordinary user as doe:doe.');
     } catch(Exception$e) {
       die("$e<br/>Failed to open database: " . $this->config['database'][0]['dsn']);
     }
@@ -82,12 +82,20 @@ class CMUser extends CObject implements IHasSQL {
     $user = (isset($user[0])) ? $user[0] : null;
     unset($user['password']);
     if($user) {
-      $user['groups'] = $this->db->ExecuteSelectQueryAndFetchAll(self::SQL('get group memberships'), array($user['id']));
-      $this->session->SetAuthenticatedUser($user);
-      $this->session->AddMessage('success', "Welcome '{$user['name']}'.");
-    } else {
-      $this->session->AddMessage('notice', "Could not login, user does not exists or password did not match.");
-    }
+		$user['groups'] = $this->db->ExecuteSelectQueryAndFetchAll(self::SQL('get group memberships'), array($user['id']));
+		foreach($user['groups'] as $val) {
+			if($val['id'] == 1) {
+				$user['hasRoleAdmin'] = true;
+			}
+			if($val['id'] == 2) {
+				$user['hasRoleUser'] = true;
+			}		
+		}
+	$this->session->SetAuthenticatedUser($user);
+	$this->AddMessage('success', "Welcome '{$user['name']}'.");
+	} else {
+	$this->AddMessage('notice', "Could not login, user does not exists or password did not match.");
+	}
     return ($user != null);
   }
 
@@ -96,11 +104,10 @@ class CMUser extends CObject implements IHasSQL {
    */
   public function Logout() {
     $this->session->UnsetAuthenticatedUser();
-    $this->session->AddMessage('success', "You have logged out.");
+    $this->AddMessage('success', "You have logged out.");
   }
   
-
-  /**
+	/**
    * Does the session contain an authenticated user?
    *
    * @returns boolen true or false.
@@ -109,14 +116,23 @@ class CMUser extends CObject implements IHasSQL {
     return ($this->session->GetAuthenticatedUser() != false);
   }
   
-  
   /**
    * Get profile information on user.
    *
    * @returns array with user profile or null if anonymous user.
    */
-  public function GetUserProfile() {
+  public function GetProfile() {
     return $this->session->GetAuthenticatedUser();
+  }
+  
+    /**
+   * Get the user acronym.
+   *
+   * @returns string with user acronym or null
+   */
+  public function GetAcronym() {
+    $profile = $this->GetProfile();
+    return isset($profile['acronym']) ? $profile['acronym'] : null;
   }
   
   
