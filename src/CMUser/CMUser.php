@@ -134,6 +134,15 @@ class CMUser extends CObject implements IHasSQL {
     $profile = $this->GetProfile();
     return isset($profile['acronym']) ? $profile['acronym'] : null;
   }
-  
+    /**
+   * Does the user have the admin role?
+   *
+   * @returns boolen true or false.
+   */
+   
+  public function IsAdministrator() {
+    $profile = $this->GetProfile();
+    return isset($profile['hasRoleAdmin']) ? $profile['hasRoleAdmin'] : null;
+  }
   
 }
