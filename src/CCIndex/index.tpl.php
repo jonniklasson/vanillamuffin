@@ -1,3 +1,6 @@
-+<h1>Admin Control Panel Index</h1>
-+<p>One controller to manage the admin related stuff. This far it should list all users and all groups
-+and enable to add, modify, delete users and add, modify, delete groups.</p>
+<h1>Index Controller</h1>
+<p>This is what you can do for now.</p>
+
+<?php foreach($menu as $val): ?>
+<li><a href='<?=create_url($val)?>'><?=$val?></a>  
+<?php endforeach; ?>
