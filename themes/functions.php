@@ -74,9 +74,9 @@ function theme_url($url) {
  */
 function login_menu() {
   $mu = CMuffin::Instance();
-  if($mu->user->IsAuthenticated()) {
-    $items = "<a href='" . create_url('user/profile') . "'>" . $mu->user->GetAcronym() . "</a> ";
-    if($mu->user->IsAdministrator()) {
+  if($mu->user['isAuthenticated']) {
+    $items = "<a href='" . create_url('user/profile') . "'>" . $mu->user['acronym'] . "</a> ";
+    if($mu->user['hasRoleAdministrator']) {
       $items .= "<a href='" . create_url('acp') . "'>acp</a> ";
     }
     $items .= "<a href='" . create_url('user/logout') . "'>logout</a> ";
@@ -85,7 +85,6 @@ function login_menu() {
   }
   return "<nav>$items</nav>";
 }
-
 
 /**
 * Get messages stored in flash-session.
