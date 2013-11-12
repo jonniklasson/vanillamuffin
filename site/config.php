@@ -19,6 +19,7 @@ $mu->config['debug']['session'] = false;
 $mu->config['debug']['timer'] = true;
 $mu->config['debug']['db-num-queries'] = true;
 $mu->config['debug']['db-queries'] = true;
+$mu->config['hashing_algorithm'] = 'sha1salt';
 
 /**
 * set session key name
