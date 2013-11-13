@@ -75,7 +75,42 @@ class CFormElement implements ArrayAccess{
     }
   }
 
-
+ /**
+   * Validate the form element value according a ruleset.
+   *
+   * @param $rules array of validation rules.
+   * returns boolean true if all rules pass, else false.
+   */
+  public function Validate($rules) {
+    $tests = array(
+      'fail' => array(
+        'message' => 'Will always fail.', 
+        'test' => 'return false;',
+      ),
+      'pass' => array(
+        'message' => 'Will always pass.', 
+        'test' => 'return true;',
+      ),
+      'not_empty' => array(
+        'message' => 'Can not be empty.', 
+        'test' => 'return $value != "";',
+      ),
+    );
+    $pass = true;
+    $messages = array();
+    $value = $this['value'];
+    foreach($rules as $key => $val) {
+      $rule = is_numeric($key) ? $val : $key;
+      if(!isset($tests[$rule])) throw new Exception('Validation of form element failed, no such validation rule exists.');
+      if(eval($tests[$rule]['test']) === false) {
+        $messages[] = $tests[$rule]['message'];
+        $pass = false;
+      }
+    }
+    if(!empty($messages)) $this['validation_messages'] = $messages;
+    return $pass;
+  }
+  
 }
 
 
@@ -212,5 +247,62 @@ EOD;
     return $submitted;
   }
   
+    /**
+   * Set validation to a form element
+   *
+   * @param $element string the name of the formelement to add validation rules to.
+   * @param $rules array of validation rules.
+   * @returns $this CForm
+   */
+  public function SetValidation($element, $rules) {
+    $this[$element]['validation'] = $rules;
+    return $this;
+  }
+  
+  /**
+   * Check if a form was submitted and perform validation and call callbacks.
+   *
+   * The form is stored in the session if validation fails. The page should then be redirected
+   * to the original form page, the form will populate from the session and should then be 
+   * rendered again.
+   *
+   * @returns boolean true if validates, false if not validate, null if not submitted.
+   */
+  public function Check() {
+    $validates = null;
+    $values = array();
+    if($_SERVER['REQUEST_METHOD'] == 'POST') {
+      unset($_SESSION['form-validation-failed']);
+      $validates = true;
+      foreach($this->elements as $element) {
+        if(isset($_POST[$element['name']])) {
+          $values[$element['name']]['value'] = $element['value'] = $_POST[$element['name']];
+          if(isset($element['validation'])) {
+            $element['validation-pass'] = $element->Validate($element['validation']);
+            if($element['validation-pass'] === false) {
+              $values[$element['name']] = array('value'=>$element['value'], 'validation_messages'=>$element['validation_messages']);
+              $validates = false;
+            }
+          }
+          if(isset($element['callback']) && $validates) {
+             call_user_func($element['callback'], $this);
+          }
+        }
+      }
+    } else if(isset($_SESSION['form-validation-failed'])) {
+      foreach($_SESSION['form-validation-failed'] as $key => $val) {
+        $this[$key]['value'] = $val['value'];
+        if(isset($val['validation_messages'])) {
+          $this[$key]['validation_messages'] = $val['validation_messages'];
+          $this[$key]['validation-pass'] = false;
+        }
+      }
+      unset($_SESSION['form-validation-failed']);
+    }
+    if($validates === false) {
+      $_SESSION['form-validation-failed'] = $values;
+    }
+    return $validates;
+  }
   
 }

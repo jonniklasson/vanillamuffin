@@ -2,7 +2,7 @@
 /**
  * A form to login the user profile.
  * 
- * @package LydiaCore
+ * @package MuffinCore
  */
 class CFormUserLogin extends CForm {
 
@@ -14,6 +14,9 @@ class CFormUserLogin extends CForm {
     $this->AddElement(new CFormElementText('acronym'))
          ->AddElement(new CFormElementPassword('password'))
          ->AddElement(new CFormElementSubmit('login', array('callback'=>array($object, 'DoLogin'))));
+
+    $this->SetValidation('acronym', array('not_empty'))
+         ->SetValidation('password', array('not_empty'));
   }
   
-}
+  }
