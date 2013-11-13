@@ -52,9 +52,10 @@ padding: 0.8em; margin-bottom: 1em; border: 2px solid #ddd; }
 .success a         { color: #264409; }
 .info a            { color: #205791; }
 
-.validation-failed{border:2px solid red;}
-.validation-message{color:red;font-size:smaller;}
-
+label{font-size:smaller;}
+  .validation-failed{border:2px solid red;}
+  .validation-message{color:red;font-size:smaller;}
+ +.form-action-link{font-size:smaller;}
 /**
  * Misc
  */

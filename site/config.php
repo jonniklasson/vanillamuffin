@@ -20,6 +20,7 @@ $mu->config['debug']['timer'] = true;
 $mu->config['debug']['db-num-queries'] = true;
 $mu->config['debug']['db-queries'] = true;
 $mu->config['hashing_algorithm'] = 'sha1salt';
+$mu->config['create_new_users'] = true;
 
 /**
 * set session key name

@@ -40,42 +40,34 @@ class CFormElement implements ArrayAccess{
    */
   public function GetHTML() {
     $id = isset($this['id']) ? $this['id'] : 'form-element-' . $this['name'];
-    $class = isset($this['class']) ? " class='{$this['class']}'" : null;
+    $class = isset($this['class']) ? " {$this['class']}" : null;
+    $validates = (isset($this['validation-pass']) && $this['validation-pass'] === false) ? ' validation-failed' : null;
+    $class = (isset($class) || isset($validates)) ? " class='{$class}{$validates}'" : null;
     $name = " name='{$this['name']}'";
     $label = isset($this['label']) ? ($this['label'] . (isset($this['required']) && $this['required'] ? "<span class='form-element-required'>*</span>" : null)) : null;
     $autofocus = isset($this['autofocus']) && $this['autofocus'] ? " autofocus='autofocus'" : null;    
     $readonly = isset($this['readonly']) && $this['readonly'] ? " readonly='readonly'" : null;    
     $type         = isset($this['type']) ? " type='{$this['type']}'" : null;
     $value         = isset($this['value']) ? " value='{$this['value']}'" : null;
+
+    $messages = null;
+    if(isset($this['validation_messages'])) {
+      $message = null;
+      foreach($this['validation_messages'] as $val) {
+        $message .= "<li>{$val}</li>\n";
+      }
+      $messages = "<ul class='validation-message'>\n{$message}</ul>\n";
+    }
     
     if($type && $this['type'] == 'submit') {
       return "<p><input id='$id'{$type}{$class}{$name}{$value}{$autofocus}{$readonly} /></p>\n";        
     } else {
-      return "<p><label for='$id'>$label</label><br><input id='$id'{$type}{$class}{$name}{$value}{$autofocus}{$readonly} /></p>\n";                          
+      return "<p><label for='$id'>$label</label><br><input id='$id'{$type}{$class}{$name}{$value}{$autofocus}{$readonly} />{$messages}</p>\n";                          
     }
   }
 
 
   /**
-   * Use the element name as label if label is not set.
-   */
-  public function UseNameAsDefaultLabel() {
-    if(!isset($this['label'])) {
-      $this['label'] = ucfirst(strtolower(str_replace(array('-','_'), ' ', $this['name']))).':';
-    }
-  }
-
-
-  /**
-   * Use the element name as value if value is not set.
-   */
-  public function UseNameAsDefaultValue() {
-    if(!isset($this['value'])) {
-      $this['value'] = ucfirst(strtolower(str_replace(array('-','_'), ' ', $this['name'])));
-    }
-  }
-
- /**
    * Validate the form element value according a ruleset.
    *
    * @param $rules array of validation rules.
@@ -110,7 +102,28 @@ class CFormElement implements ArrayAccess{
     if(!empty($messages)) $this['validation_messages'] = $messages;
     return $pass;
   }
-  
+
+
+  /**
+   * Use the element name as label if label is not set.
+   */
+  public function UseNameAsDefaultLabel() {
+    if(!isset($this['label'])) {
+      $this['label'] = ucfirst(strtolower(str_replace(array('-','_'), ' ', $this['name']))).':';
+    }
+  }
+
+
+  /**
+   * Use the element name as value if value is not set.
+   */
+  public function UseNameAsDefaultValue() {
+    if(!isset($this['value'])) {
+      $this['value'] = ucfirst(strtolower(str_replace(array('-','_'), ' ', $this['name'])));
+    }
+  }
+
+
 }
 
 
@@ -188,6 +201,9 @@ class CForm implements ArrayAccess {
 
   /**
    * Add a form element
+   *
+   * @param $element CFormElement the formelement to add.
+   * @returns $this CForm
    */
   public function AddElement($element) {
     $this[$element['name']] = $element;
@@ -196,14 +212,35 @@ class CForm implements ArrayAccess {
   
 
   /**
-   * Return HTML for the form
+   * Set validation to a form element
+   *
+   * @param $element string the name of the formelement to add validation rules to.
+   * @param $rules array of validation rules.
+   * @returns $this CForm
    */
-  public function GetHTML() {
+  public function SetValidation($element, $rules) {
+    $this[$element]['validation'] = $rules;
+    return $this;
+  }
+  
+
+  /**
+   * Return HTML for the form or the formdefinition.
+   *
+   * @param $type string what part of the form to return.
+   * @returns string with HTML for the form.
+   */
+  public function GetHTML($type=null) {
     $id           = isset($this->form['id'])      ? " id='{$this->form['id']}'" : null;
     $class         = isset($this->form['class'])   ? " class='{$this->form['class']}'" : null;
     $name         = isset($this->form['name'])    ? " name='{$this->form['name']}'" : null;
     $action = isset($this->form['action'])  ? " action='{$this->form['action']}'" : null;
     $method = " method='post'";
+
+    if($type == 'form') {
+      return "<form{$id}{$class}{$name}{$action}{$method}>";
+    }
+    
     $elements = $this->GetHTMLForElements();
     $html = <<< EOD
 \n<form{$id}{$class}{$name}{$action}{$method}>
@@ -228,37 +265,6 @@ EOD;
   }
   
 
-  /**
-   * Check if a form was submitted and perform validation and call callbacks
-   */
-  public function CheckIfSubmitted() {
-    $submitted = false;
-    if($_SERVER['REQUEST_METHOD'] == 'POST') {
-      $submitted = true;
-      foreach($this->elements as $element) {
-        if(isset($_POST[$element['name']])) {
-          $element['value'] = $_POST[$element['name']];
-          if(isset($element['callback'])) {
-            call_user_func($element['callback'], $this);
-          }
-        }
-      }
-    }
-    return $submitted;
-  }
-  
-    /**
-   * Set validation to a form element
-   *
-   * @param $element string the name of the formelement to add validation rules to.
-   * @param $rules array of validation rules.
-   * @returns $this CForm
-   */
-  public function SetValidation($element, $rules) {
-    $this[$element]['validation'] = $rules;
-    return $this;
-  }
-  
   /**
    * Check if a form was submitted and perform validation and call callbacks.
    *
@@ -304,5 +310,6 @@ EOD;
     }
     return $validates;
   }
+  
   
 }
